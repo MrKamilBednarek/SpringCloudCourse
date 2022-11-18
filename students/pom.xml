@@ -30,10 +30,11 @@
 		<!--<dependency>
 			<groupId>org.postgresql</groupId>
 			<artifactId>postgresql</artifactId>
-			<version>42.2.12</version>
+			<version>42.5.0</version>
 		</dependency>-->
 		<!-- Okomentuj dla Bazy danych H2 i zakomentuj dependency postgreSql -->
-		        <dependency>
+		       <dependency>
+
                     <groupId>com.h2database</groupId>
                     <artifactId>h2</artifactId>
                     <scope>runtime</scope>
@@ -60,6 +61,13 @@
 			<groupId>jakarta.validation</groupId>
 			<artifactId>jakarta.validation-api</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>org.projectlombok</groupId>
+			<artifactId>lombok</artifactId>
+			<version>1.18.24</version>
+			<scope>provided</scope>
+		</dependency>
+
 	</dependencies>
 
 	<build>
