@@ -3,6 +3,8 @@ package com.kamil.courses.service;
 import com.kamil.courses.exception.CourseError;
 import com.kamil.courses.exception.CourseException;
 import com.kamil.courses.model.Course;
+import com.kamil.courses.model.CourseMember;
+import com.kamil.courses.model.dto.Student;
 import com.kamil.courses.repository.CourseRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -13,9 +15,11 @@ import java.util.List;
 public class CourseServiceImpl implements CourseService{
 
     private final CourseRepository courseRepository;
+    private final StudentServiceClient studentServiceClient;
 
-    public CourseServiceImpl(CourseRepository courseRepository) {
+    public CourseServiceImpl(CourseRepository courseRepository, StudentServiceClient studentServiceClient) {
         this.courseRepository = courseRepository;
+        this.studentServiceClient = studentServiceClient;
     }
 
     @Override
@@ -32,9 +36,7 @@ public class CourseServiceImpl implements CourseService{
         Course course = courseRepository.findById(code)
                 .orElseThrow(() -> new CourseException(CourseError.COURSE_NOT_FOUND));
 
-        if (!Course.Status.ACTIVE.equals(course.getStatus())) {
-            throw new CourseException(CourseError.COURSE_IS_NOT_ACTIVE);
-        }
+        validateCourseStatus(course);
         return course;
     }
 
@@ -102,5 +104,33 @@ public class CourseServiceImpl implements CourseService{
                     }
                     return courseRepository.save(courseFromDb);
                 }).orElseThrow(() -> new CourseException(CourseError.COURSE_NOT_FOUND));
+    }
+
+
+    public void courseEnrollment(String courseCode,Long studentId) {
+        Course course = getCourse(courseCode);
+        validateCourseStatus(course);
+        Student student=studentServiceClient.getStudentById(studentId);
+        validateStudentBeforeCourseEnrollment(course, student);
+        course.incrementParticipantsNumber();
+        course.getCourseMember().add(new CourseMember(student.getEmail()));
+        courseRepository.save(course);
+    }
+
+    private static void validateStudentBeforeCourseEnrollment(Course course, Student student) {
+        if(!Student.Status.ACTIVE.equals(student.getStatus())){
+            throw new CourseException(CourseError.STUDENT_IS_NOT_ACTIVE);
+        }
+
+        if(course.getCourseMember().stream()
+                .anyMatch(member-> student.getEmail().equals(member.getEmail()))){
+            throw new CourseException(CourseError.STUDENT_ALREADY_ENROLLED);
+        }
+    }
+
+    private static void validateCourseStatus(Course course) {
+        if(!Course.Status.ACTIVE.equals(course.getStatus())){
+            throw new CourseException(CourseError.COURSE_IS_NOT_ACTIVE);
+        }
     }
 }

@@ -11,6 +11,8 @@ import org.springframework.data.annotation.Id;
 
 import javax.validation.constraints.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Document
 @Getter
@@ -29,12 +31,13 @@ public class Course {
     @Future
     private LocalDateTime endDate;
     @Min(0)
-    private long participantsLimit;
+    private Long participantsLimit;
     @NotNull
     @Min(0)
-    private long participantsNumber;
+    private Long participantsNumber;
     @NotNull
     private Status status;
+    private List<CourseMember> courseMember = new ArrayList<>();
     public enum Status {
         ACTIVE,
         INACTIVE,
@@ -62,5 +65,10 @@ public class Course {
         validateStatus();
         validateParticipantsLimit();
     }
-
+    public void incrementParticipantsNumber(){
+        participantsNumber++;
+        if(participantsNumber==participantsLimit){
+            setStatus(Course.Status.FULL);
+        }
+    }
 }

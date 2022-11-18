@@ -1,7 +1,10 @@
 package com.kamil.courses.controller;
 
 import com.kamil.courses.model.Course;
+import com.kamil.courses.model.dto.Student;
 import com.kamil.courses.service.CourseService;
+import com.kamil.courses.service.StudentServiceClient;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 
@@ -12,6 +15,7 @@ import java.util.List;
 @RequestMapping("/courses")
 public class CourseController {
     private final CourseService courseService;
+
 
     public CourseController(CourseService courseService) {
         this.courseService = courseService;
@@ -44,5 +48,10 @@ public class CourseController {
     @PatchMapping("/{code}")
     public Course patchCourse(@PathVariable String code, @RequestBody Course course) {
         return courseService.patchCourse(code, course);
+    }
+    @PostMapping("/{courseCode}/student/{studentId}")
+    public ResponseEntity<?> courseEnrollment(@PathVariable String courseCode, @PathVariable Long studentId){
+        courseService.courseEnrollment(courseCode,studentId);
+        return ResponseEntity.ok().build();
     }
 }
