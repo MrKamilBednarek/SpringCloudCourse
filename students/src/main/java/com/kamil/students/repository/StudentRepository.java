@@ -12,4 +12,6 @@ public interface StudentRepository extends JpaRepository<Student, Long> {
     boolean existsByEmail(String email);
 
     List<Student> findAllByStatus(Student.Status status);
+
+    List<Student> findAllByEmailIn(List<String> emails);
 }

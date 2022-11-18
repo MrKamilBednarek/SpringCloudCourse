@@ -1,6 +1,7 @@
 package com.kamil.courses.service;
 
 import com.kamil.courses.model.Course;
+import com.kamil.courses.model.dto.StudentDto;
 
 import java.util.List;
 
@@ -16,4 +17,6 @@ public interface CourseService {
     Course patchCourse(String code, Course course);
 
     void courseEnrollment(String courseCode,Long studentId);
+
+    List<StudentDto> getCourseMembers (String courseCode);
 }

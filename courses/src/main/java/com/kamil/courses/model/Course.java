@@ -37,7 +37,7 @@ public class Course {
     private Long participantsNumber;
     @NotNull
     private Status status;
-    private List<CourseMember> courseMember = new ArrayList<>();
+    private List<CourseMember> courseMembers = new ArrayList<>();
     public enum Status {
         ACTIVE,
         INACTIVE,

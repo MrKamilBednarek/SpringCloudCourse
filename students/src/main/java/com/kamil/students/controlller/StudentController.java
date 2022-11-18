@@ -21,6 +21,10 @@ public class StudentController {
     public List<Student> getStudents(@RequestParam(required = false) Student.Status status) {
         return studentService.getStudents(status);
     }
+    @PostMapping("/emails")
+    public List<Student> getStudentsByEmails(@RequestBody List<String> emails){
+        return studentService.getStudentsByEmails(emails);
+    }
 
     @PostMapping
     public Student addStudent(@RequestBody @Valid Student student) {

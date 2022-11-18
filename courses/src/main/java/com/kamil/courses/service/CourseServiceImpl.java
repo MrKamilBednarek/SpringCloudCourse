@@ -4,12 +4,14 @@ import com.kamil.courses.exception.CourseError;
 import com.kamil.courses.exception.CourseException;
 import com.kamil.courses.model.Course;
 import com.kamil.courses.model.CourseMember;
-import com.kamil.courses.model.dto.Student;
+import com.kamil.courses.model.dto.StudentDto;
 import com.kamil.courses.repository.CourseRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import javax.validation.constraints.NotNull;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class CourseServiceImpl implements CourseService{
@@ -36,7 +38,7 @@ public class CourseServiceImpl implements CourseService{
         Course course = courseRepository.findById(code)
                 .orElseThrow(() -> new CourseException(CourseError.COURSE_NOT_FOUND));
 
-        validateCourseStatus(course);
+        //validateCourseStatus(course);
         return course;
     }
 
@@ -110,20 +112,29 @@ public class CourseServiceImpl implements CourseService{
     public void courseEnrollment(String courseCode,Long studentId) {
         Course course = getCourse(courseCode);
         validateCourseStatus(course);
-        Student student=studentServiceClient.getStudentById(studentId);
-        validateStudentBeforeCourseEnrollment(course, student);
+        StudentDto studentDto =studentServiceClient.getStudentById(studentId);
+        validateStudentBeforeCourseEnrollment(course, studentDto);
         course.incrementParticipantsNumber();
-        course.getCourseMember().add(new CourseMember(student.getEmail()));
+        course.getCourseMembers().add(new CourseMember(studentDto.getEmail()));
         courseRepository.save(course);
     }
 
-    private static void validateStudentBeforeCourseEnrollment(Course course, Student student) {
-        if(!Student.Status.ACTIVE.equals(student.getStatus())){
+    public List<StudentDto> getCourseMembers(String courseCode) {
+        Course course = getCourse(courseCode);
+        List<@NotNull String> emailsMembers = course.getCourseMembers().stream()
+                .map(CourseMember::getEmail).collect(Collectors.toList());
+        return studentServiceClient.getStudentsByEmails(emailsMembers);
+
+    }
+
+
+    private static void validateStudentBeforeCourseEnrollment(Course course, StudentDto studentDto) {
+        if(!StudentDto.Status.ACTIVE.equals(studentDto.getStatus())){
             throw new CourseException(CourseError.STUDENT_IS_NOT_ACTIVE);
         }
 
-        if(course.getCourseMember().stream()
-                .anyMatch(member-> student.getEmail().equals(member.getEmail()))){
+        if(course.getCourseMembers().stream()
+                .anyMatch(member-> studentDto.getEmail().equals(member.getEmail()))){
             throw new CourseException(CourseError.STUDENT_ALREADY_ENROLLED);
         }
     }

@@ -10,8 +10,7 @@ public enum CourseError {
     COURSE_START_DATE_IS_AFTER_END_DATE("Course start date is after end date"),
     COURSE_PARTICIPANTS_LIMIT_IS_EXCEEDED("Course participants limit is exceeded"),
     COURSE_CAN_NOT_SET_FULL_STATUS("Course can not set full status"),
-    COURSE_CAN_NOT_SET_ACTIVE_STATUS("Course can not set active status"),
-    STUDENT_CAN_NOT_BE_ENROLLED("Student can not be enrolled");
+    COURSE_CAN_NOT_SET_ACTIVE_STATUS("Course can not set active status");
 
     private String message;
 
