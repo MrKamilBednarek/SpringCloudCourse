@@ -13,6 +13,7 @@ import javax.validation.constraints.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Document
 @Getter
@@ -53,10 +54,10 @@ public class Course {
         }
     }
     private void validateStatus(){
-        if(Status.FULL.equals(status)&& !(participantsNumber==(participantsLimit))){
+        if(Status.FULL.equals(status)&& !(Objects.equals(participantsNumber, participantsLimit))){
             throw new CourseException(CourseError.COURSE_CAN_NOT_SET_FULL_STATUS);
         }
-        if(Status.ACTIVE.equals(status)&&(participantsNumber==(participantsLimit))){
+        if(Status.ACTIVE.equals(status)&&(Objects.equals(participantsNumber, participantsLimit))){
             throw new CourseException(CourseError.COURSE_CAN_NOT_SET_ACTIVE_STATUS);
         }
     }
@@ -67,8 +68,9 @@ public class Course {
     }
     public void incrementParticipantsNumber(){
         participantsNumber++;
-        if(participantsNumber==participantsLimit){
+        if(participantsNumber.equals(participantsLimit)){
             setStatus(Course.Status.FULL);
         }
     }
 }
+
